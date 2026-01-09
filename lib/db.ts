@@ -37,7 +37,8 @@ export function getDb() {
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         row_data TEXT NOT NULL,
         template_id INTEGER,
-        prompt TEXT NOT NULL,
+        formatted_prompt TEXT NOT NULL,
+        ai_response TEXT,
         generated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (template_id) REFERENCES prompt_templates (id)
       );

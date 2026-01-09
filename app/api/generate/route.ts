@@ -46,7 +46,12 @@ export async function POST(request: NextRequest) {
     const apiKey = process.env.GEMINI_API_KEY;
     
     if (!apiKey) {
-      // If no API key, return the formatted prompt without AI generation
+      // If no API key, store the formatted prompt without AI generation
+      const stmt = db.prepare(
+        'INSERT INTO generated_prompts (row_data, template_id, formatted_prompt, ai_response) VALUES (?, ?, ?, ?)'
+      );
+      stmt.run(JSON.stringify(rowData), template.id, prompt, null);
+
       return NextResponse.json({
         success: true,
         prompt: prompt,
@@ -65,9 +70,9 @@ export async function POST(request: NextRequest) {
 
     // Store in database
     const stmt = db.prepare(
-      'INSERT INTO generated_prompts (row_data, template_id, prompt) VALUES (?, ?, ?)'
+      'INSERT INTO generated_prompts (row_data, template_id, formatted_prompt, ai_response) VALUES (?, ?, ?, ?)'
     );
-    stmt.run(JSON.stringify(rowData), template.id, generatedText);
+    stmt.run(JSON.stringify(rowData), template.id, prompt, generatedText);
 
     return NextResponse.json({
       success: true,

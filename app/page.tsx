@@ -151,6 +151,11 @@ export default function Home() {
   };
 
   const handleSaveTemplate = async () => {
+    if (!templateName.trim() || !currentTemplate.trim()) {
+      alert('Please provide both template name and content');
+      return;
+    }
+
     try {
       const method = isEditingTemplate ? 'PUT' : 'POST';
       const body = isEditingTemplate
@@ -165,7 +170,6 @@ export default function Home() {
 
       if (response.ok) {
         await fetchTemplates();
-        setIsEditingTemplate(false);
         alert('Template saved successfully!');
       }
     } catch (error) {
@@ -275,9 +279,20 @@ export default function Home() {
                   setIsEditingTemplate(true);
                   handleSaveTemplate();
                 }}
-                className="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition"
+                disabled={!templateName.trim() || !currentTemplate.trim()}
+                className="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition disabled:bg-gray-400 disabled:cursor-not-allowed"
               >
-                Update Template
+                {isEditingTemplate ? 'Update Template' : 'Save as Update'}
+              </button>
+              <button
+                onClick={() => {
+                  setIsEditingTemplate(false);
+                  handleSaveTemplate();
+                }}
+                disabled={!templateName.trim() || !currentTemplate.trim()}
+                className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition disabled:bg-gray-400 disabled:cursor-not-allowed"
+              >
+                Save as New Template
               </button>
               <button
                 onClick={() => {
@@ -285,9 +300,9 @@ export default function Home() {
                   setTemplateName('');
                   setCurrentTemplate('');
                 }}
-                className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
+                className="px-6 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition"
               >
-                Create New Template
+                Clear Form
               </button>
             </div>
           </div>
