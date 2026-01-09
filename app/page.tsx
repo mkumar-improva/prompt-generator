@@ -524,8 +524,19 @@ export default function Home() {
                       </div>
 
                       <button
-                        onClick={() => {
-                          navigator.clipboard.writeText(generatedPrompt.generatedText);
+                        onClick={async () => {
+                          try {
+                            await navigator.clipboard.writeText(generatedPrompt.generatedText);
+                            // Could add a success toast here
+                          } catch (err) {
+                            // Fallback: create a temporary textarea
+                            const textarea = document.createElement('textarea');
+                            textarea.value = generatedPrompt.generatedText;
+                            document.body.appendChild(textarea);
+                            textarea.select();
+                            document.execCommand('copy');
+                            document.body.removeChild(textarea);
+                          }
                         }}
                         className="w-full inline-flex items-center justify-center px-4 py-2 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 text-sm font-medium rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition"
                       >

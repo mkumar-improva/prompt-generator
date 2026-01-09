@@ -18,7 +18,7 @@ A powerful web application for uploading Excel files, filtering data, and genera
 - **Styling**: Tailwind CSS 4
 - **Database**: SQLite with better-sqlite3
 - **AI**: Google Gemini AI
-- **Excel Parsing**: xlsx library
+- **Excel Parsing**: ExcelJS (secure)
 
 ## Getting Started
 
