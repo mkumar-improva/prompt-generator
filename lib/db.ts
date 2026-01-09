@@ -1,5 +1,6 @@
 import Database from 'better-sqlite3';
 import path from 'path';
+import fs from 'fs';
 
 const dbPath = path.join(process.cwd(), 'data', 'prompt-generator.db');
 
@@ -8,7 +9,6 @@ let db: Database.Database | null = null;
 export function getDb() {
   if (!db) {
     // Create data directory if it doesn't exist
-    const fs = require('fs');
     const dataDir = path.join(process.cwd(), 'data');
     if (!fs.existsSync(dataDir)) {
       fs.mkdirSync(dataDir, { recursive: true });

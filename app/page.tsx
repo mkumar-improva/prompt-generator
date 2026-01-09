@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 interface RowData {
   [key: string]: string | number;
@@ -32,6 +32,18 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [filename, setFilename] = useState('');
 
+  const applyFilters = useCallback(() => {
+    let filtered = [...excelData];
+    Object.entries(filters).forEach(([key, value]) => {
+      if (value) {
+        filtered = filtered.filter((row) =>
+          String(row[key]).toLowerCase().includes(value.toLowerCase())
+        );
+      }
+    });
+    setFilteredData(filtered);
+  }, [excelData, filters]);
+
   useEffect(() => {
     fetchTemplates();
     fetchLatestData();
@@ -39,7 +51,7 @@ export default function Home() {
 
   useEffect(() => {
     applyFilters();
-  }, [excelData, filters]);
+  }, [applyFilters]);
 
   const fetchTemplates = async () => {
     try {
@@ -101,18 +113,6 @@ export default function Home() {
     } finally {
       setLoading(false);
     }
-  };
-
-  const applyFilters = () => {
-    let filtered = [...excelData];
-    Object.entries(filters).forEach(([key, value]) => {
-      if (value) {
-        filtered = filtered.filter((row) =>
-          String(row[key]).toLowerCase().includes(value.toLowerCase())
-        );
-      }
-    });
-    setFilteredData(filtered);
   };
 
   const handleFilterChange = (column: string, value: string) => {
