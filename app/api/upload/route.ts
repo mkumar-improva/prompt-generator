@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import * as XLSX from 'xlsx';
+import ExcelJS from 'exceljs';
 import { getDb } from '@/lib/db';
 
 export async function POST(request: NextRequest) {
@@ -16,13 +16,33 @@ export async function POST(request: NextRequest) {
 
     // Read file as buffer
     const arrayBuffer = await file.arrayBuffer();
-    const buffer = Buffer.from(arrayBuffer);
 
-    // Parse Excel file
-    const workbook = XLSX.read(buffer, { type: 'buffer' });
-    const sheetName = workbook.SheetNames[0];
-    const worksheet = workbook.Sheets[sheetName];
-    const jsonData = XLSX.utils.sheet_to_json(worksheet);
+    // Parse Excel file with ExcelJS
+    const workbook = new ExcelJS.Workbook();
+    await workbook.xlsx.load(arrayBuffer);
+    
+    const worksheet = workbook.worksheets[0];
+    const jsonData: Record<string, string | number>[] = [];
+    
+    // Get headers from first row
+    const headers: string[] = [];
+    worksheet.getRow(1).eachCell((cell) => {
+      headers.push(cell.value?.toString() || '');
+    });
+    
+    // Convert rows to JSON
+    worksheet.eachRow((row, rowNumber) => {
+      if (rowNumber > 1) { // Skip header row
+        const rowData: Record<string, string | number> = {};
+        row.eachCell((cell, colNumber) => {
+          const header = headers[colNumber - 1];
+          if (header) {
+            rowData[header] = cell.value?.toString() || '';
+          }
+        });
+        jsonData.push(rowData);
+      }
+    });
 
     // Store in database
     const db = getDb();
